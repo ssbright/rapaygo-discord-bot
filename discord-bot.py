@@ -1,8 +1,3 @@
-# Application ID - 984815715544617011
-# Public Key - f3544dc0ff418c17305993ee9bf2b86b6bb5dcccbdf29d067e10485a83d363f8
-# Permission Integer - 8
-#generated URL https://discord.com/api/oauth2/authorize?client_id=984815715544617011&permissions=8&scope=bot
-
 # bot.py
 import os
 
