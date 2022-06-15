@@ -1,0 +1,33 @@
+Metadata-Version: 2.1
+Name: discord-ext-bot
+Version: 1.0.1
+Summary: An package for discord.py.
+Home-page: https://github.com/FrostiiWeeb/discord-ext-bot
+Author: Alex Hutz
+Author-email: frostiiflames@gmail.com
+License: MIT
+Platform: UNKNOWN
+Requires-Python: >=3.8.1
+Description-Content-Type: text/markdown
+Requires-Dist: discord.py (>=1.5.1)
+Requires-Dist: jishaku
+
+# discord-ext-bot version 0.0.6
+An package for discord.py
+
+# How to install
+
+`pip install discord-ext-bot`
+
+## Development version:
+`pip install git+https://github.com/FrostiiWeeb/discord-ext-bot`
+
+## Example:
+from discord.ext import bot
+
+bot = bot.Bot(command_prefix='!')
+
+### Made by:
+FrostiiWeeb
+
+
