@@ -1,15 +1,18 @@
 # bot.py
 import os
+from pickle import TRUE
 import discord
 import discord_slash
 from dotenv import load_dotenv
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord_slash import SlashCommand, SlashContext
 from discord_slash.utils.manage_commands import create_choice, create_option 
 import qrcode
 import qrcode.image.svg
+import threading 
 from threading import Thread 
 import polling2
+
 
 #local imports
 from command_parser import command_validator
@@ -83,28 +86,27 @@ async def on_message(message):  # this event is called when a message is sent by
             os.remove("./invoice.png")
 
             #Polling to see if invoice has been paid 
-            def is_paid_responce(response):
-                    return response == "COMPLETED"
 
-            def poll_pay():
-                polling2.poll (  
-                lambda : payment_confirmed_checker(tokenDict["payment_hash"]),
-                check_success = is_paid_responce,
-                max_tries=100,
-                step = 1 ,
-                ignore_exceptions=(IOError,),
-                )
-
-    
-            thread = Thread(target=poll_pay)
+                    
+            @tasks.loop(seconds=5.0, count=20)
+            async def slow_count():
+                global pStatus 
+                pStatus = payment_confirmed_checker(tokenDict["payment_hash"]) == "COMPLETED"
 
 
-            thread.start()
-            #await channel.send("Waiting for payment...")
+            @slow_count.after_loop
+            async def after_slow_count():
+                if pStatus == True:
+                    print("youve been paud")
+                    await channel.send("Youve been paid")
+                else:
+                    print("no payment was sent")
+                    print(pStatus)
+                    await channel.send("No payment was sent")
 
-            thread.join()
-            await channel.send("You have been paid!")
-        
+            
+            slow_count.start()
+ 
         else:
             pass
         #If..else for generating the invoice using the format @bot paid? {payment_hash} @recipient 
