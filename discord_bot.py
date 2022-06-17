@@ -8,10 +8,12 @@ from discord_slash import SlashCommand, SlashContext
 from discord_slash.utils.manage_commands import create_choice, create_option 
 import qrcode
 import qrcode.image.svg
+from threading import Thread 
+import polling2
 
 #local imports
 from command_parser import command_validator
-from api_handler import invoice_generator
+from api_handler import bot_commands, payment_confirmed_checker
 
 
 load_dotenv()
@@ -58,6 +60,10 @@ async def on_message(message):  # this event is called when a message is sent by
 
     print("Received a message:", content)
 
+    if content.strip() == "hello":  # if the message is 'hello', the bot responds with 'Hi!'
+        await channel.send("Hi!")
+
+  
     if  command_validator(content) == True:
         await channel.send("I got your command!")
         cList = str.split(content)
@@ -65,39 +71,53 @@ async def on_message(message):  # this event is called when a message is sent by
         command = cList[1]
         amount  = cList[2]
         name = cList[3]
+        #If..else for generating the invoice using the format @bot paid? {payment_hash} @recipient 
+        if command == "tip":
+            tokenDict= bot_commands(command, amount, name)
+            await channel.send("Here is your payment request: ```{}```".format(tokenDict["payment_request"]))
+            #await channel.send("Here is a link to the decoder: https://lightningdecoder.com/{}".format(tokenDict["payment_request"]))
+            qr = qrcode.make(tokenDict["payment_request"])
+            qrimage = qr.save("invoice.png")
+            #await channel.send("And here is your QR code!")
+            await channel.send(file=discord.File("invoice.png"))
+            os.remove("./invoice.png")
 
-        payment_req = invoice_generator(command, amount, name)
-        await channel.send("Here is your payment request: ```{}```. Here is a link to the decoder: https://lightningdecoder.com/{}".format(payment_req, payment_req))
+            #Polling to see if invoice has been paid 
+            def is_paid_responce(response):
+                    return response == "COMPLETED"
 
-        qr = qrcode.make(payment_req)
-        qrimage = qr.save("invoice.png")
-        await channel.send("And here is your QR code!")
-        await channel.send(file=discord.File("invoice.png"))
-        os.remove("./invoice.png")
+            def poll_pay():
+                polling2.poll (  
+                lambda : payment_confirmed_checker(tokenDict["payment_hash"]),
+                check_success = is_paid_responce,
+                max_tries=100,
+                step = 1 ,
+                ignore_exceptions=(IOError,),
+                )
+
+    
+            thread = Thread(target=poll_pay)
+
+
+            thread.start()
+            #await channel.send("Waiting for payment...")
+
+            thread.join()
+            await channel.send("You have been paid!")
         
-
+        else:
+            pass
+        #If..else for generating the invoice using the format @bot paid? {payment_hash} @recipient 
+        if command == "paid?":
+            responceDict= bot_commands(command, amount, name)
+            if responceDict["status"] == "COMPLETED":
+                await channel.send("Yup! You have been paid!")
+            else:
+                await channel.send("Sorry, you have not been paid yet. Status is:{}".format(responceDict["status"]))
     else:
         print("Sorry, I do not understand this command.")
 
 
-    if content.strip() == "hello":  # if the message is 'hello', the bot responds with 'Hi!'
-        await channel.send("Hi!")
-
-
-
-
-
-#@raypaygobot tip 200 @brightman11
-
-"""
-@slash.slash(
-    name="hello",
-    description="Just sends a message",
-    guild_ids=[974081336866373724]
-)
-async def _hello(ctx:SlashContext):
-    await ctx.send("World!")
-"""
 
 
 client.run(TOKEN)
