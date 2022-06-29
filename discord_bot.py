@@ -17,7 +17,7 @@ import polling2
 #local imports
 from command_parser import command_validator
 from api_handler import bot_commands, payment_confirmed_checker
-
+from db.db import persist_invoice
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -76,7 +76,12 @@ async def on_message(message):  # this event is called when a message is sent by
         name = cList[3]
         #If..else for generating the invoice using the format @bot paid? {payment_hash} @recipient 
         if command == "tip":
+            bot_commands(command, amount, name)
+            sender = message.author
+
             tokenDict= bot_commands(command, amount, name)
+
+            persist_invoice(tokenDict["invoice_id"], tokenDict["payment_hash"], name, sender, "tip", amount)
             await channel.send("Here is your payment request: ```{}```".format(tokenDict["payment_request"]))
             #await channel.send("Here is a link to the decoder: https://lightningdecoder.com/{}".format(tokenDict["payment_request"]))
             qr = qrcode.make(tokenDict["payment_request"])
@@ -87,7 +92,7 @@ async def on_message(message):  # this event is called when a message is sent by
 
             #Polling to see if invoice has been paid 
 
-                    
+'''                   
             @tasks.loop(seconds=5.0, count=20)
             async def slow_count():
                 global pStatus 
@@ -104,9 +109,9 @@ async def on_message(message):  # this event is called when a message is sent by
                     print(pStatus)
                     await channel.send("No payment was sent")
 
-            
+  
             slow_count.start()
- 
+
         else:
             pass
         #If..else for generating the invoice using the format @bot paid? {payment_hash} @recipient 
@@ -116,6 +121,7 @@ async def on_message(message):  # this event is called when a message is sent by
                 await channel.send("Yup! You have been paid!")
             else:
                 await channel.send("Sorry, you have not been paid yet. Status is:{}".format(responceDict["status"]))
+ '''
     else:
         print("Sorry, I do not understand this command.")
 

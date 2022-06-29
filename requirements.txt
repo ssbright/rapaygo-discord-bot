@@ -2,3 +2,4 @@ discord
 discord-py-slash-command
 python-dotenv
 discord-ext-bot
+psycopg2
