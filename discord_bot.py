@@ -14,10 +14,12 @@ from threading import Thread
 import polling2
 
 
+
 #local imports
 from command_parser import command_validator
 from api_handler import bot_commands, payment_confirmed_checker
 from db.db import persist_invoice
+from pay_status_thread import pay_status, daemon_thread
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -78,10 +80,11 @@ async def on_message(message):  # this event is called when a message is sent by
         if command == "tip":
             bot_commands(command, amount, name)
             sender = message.author
-
             tokenDict= bot_commands(command, amount, name)
 
+            #adds row to databse for invoice generated
             persist_invoice(tokenDict["invoice_id"], tokenDict["payment_hash"], name, sender, "tip", amount)
+
             await channel.send("Here is your payment request: ```{}```".format(tokenDict["payment_request"]))
             #await channel.send("Here is a link to the decoder: https://lightningdecoder.com/{}".format(tokenDict["payment_request"]))
             qr = qrcode.make(tokenDict["payment_request"])
@@ -121,11 +124,12 @@ async def on_message(message):  # this event is called when a message is sent by
                 await channel.send("Yup! You have been paid!")
             else:
                 await channel.send("Sorry, you have not been paid yet. Status is:{}".format(responceDict["status"]))
- '''
+
     else:
         print("Sorry, I do not understand this command.")
+ '''
 
-
-
+daemon_thread.start()
 
 client.run(TOKEN)
+
