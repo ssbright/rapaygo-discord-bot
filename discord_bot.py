@@ -1,35 +1,17 @@
 # bot.py
-import os
-from pickle import TRUE
 import discord
-import discord_slash
-from dotenv import load_dotenv
-from discord.ext import commands, tasks
-from discord_slash import SlashCommand, SlashContext
-from discord_slash.utils.manage_commands import create_choice, create_option 
 import qrcode
 import qrcode.image.svg
-import threading 
-from threading import Thread 
-import polling2
+
 
 
 
 #local imports
 from command_parser import command_validator
-from api_handler import bot_commands, payment_confirmed_checker
+from api_handler import bot_commands
+#from pay_status_thread import daemon_thread
 from db.db import persist_invoice
-from pay_status_thread import pay_status, daemon_thread
-
-load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
-GUILD = os.getenv('DISCORD_GUILD')
-GUILD_ID = os.getenv('DISCORD_GUILD_ID')
-CHANNEL_ID= os.getenv('DISCORD_CHANNEL_ID')
-BOT_ID=os.getenv('DISCORD_BOT_ID')
-
-client = commands.Bot(command_prefix="!")
-slash = SlashCommand(client, sync_commands=True)
+from variables import *
 
 
 
@@ -95,41 +77,9 @@ async def on_message(message):  # this event is called when a message is sent by
 
             #Polling to see if invoice has been paid 
 
-'''                   
-            @tasks.loop(seconds=5.0, count=20)
-            async def slow_count():
-                global pStatus 
-                pStatus = payment_confirmed_checker(tokenDict["payment_hash"]) == "COMPLETED"
 
+#daemon_thread.start()
 
-            @slow_count.after_loop
-            async def after_slow_count():
-                if pStatus == True:
-                    print("youve been paud")
-                    await channel.send("Youve been paid")
-                else:
-                    print("no payment was sent")
-                    print(pStatus)
-                    await channel.send("No payment was sent")
-
-  
-            slow_count.start()
-
-        else:
-            pass
-        #If..else for generating the invoice using the format @bot paid? {payment_hash} @recipient 
-        if command == "paid?":
-            responceDict= bot_commands(command, amount, name)
-            if responceDict["status"] == "COMPLETED":
-                await channel.send("Yup! You have been paid!")
-            else:
-                await channel.send("Sorry, you have not been paid yet. Status is:{}".format(responceDict["status"]))
-
-    else:
-        print("Sorry, I do not understand this command.")
- '''
-
-daemon_thread.start()
 
 client.run(TOKEN)
 

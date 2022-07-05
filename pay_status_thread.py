@@ -2,23 +2,49 @@ import logging
 import threading
 import time
 
-import logging
-import threading
-import time
-from db.db import fetch_all_invoice, update_db
+# import logging
+# import threading
+# import time
+from variables import *
+from api_handler import payment_confirmed_checker
+from discord.ext import tasks
 
-def pay_status():
-    logging.info("Thread %s: starting")
-    while True:
-        #print(f"[{threading.current_thread().name}] Printing this message every 2 seconds")
-        update_db()
-        time.sleep(2)
-    logging.info("Thread %s: finishing")
 
-# initiate the thread with daemon set to True
-daemon_thread = threading.Thread(target=pay_status, name="daemon-thread", daemon=True)
-# or
-# daemon_thread.daemon = True
-# or
-# daemon_thread.setDaemon(True)
-#daemon_thread.start()
+
+
+@client.event
+async def on_ready():
+    print(f'{client.user} has connected to Discord #2!')
+    channel = client.get_channel(int(CHANNEL_ID))
+    await channel.send("Im Online a second time!")
+    slow_count.start()
+
+
+@tasks.loop(seconds=5.0)
+async def slow_count():
+    print("take loop begin")
+
+    # cur.execute("""select id from invoice_audit where status= 'PENDING'""")
+    cur.execute("""select * from invoice_audit""")
+    query_results = cur.fetchall()
+
+    for row in query_results:
+        time.sleep(1)
+        # print(f"inspect row {row}")
+        payHash = row[4]
+        curr_status = row[9]
+        recipient = row[5]
+        print(curr_status)
+        print(payHash)
+        if (payment_confirmed_checker(payHash) == "COMPLETED") and (curr_status != "COMPLETED"):
+            cur.execute(f"""update invoice_audit set status='COMPLETED' where payment_hash='{payHash}'""")
+            conn.commit()
+            channel = client.get_channel(int(CHANNEL_ID))
+            await channel.send(f"{recipient} got tipped in Sats! ")
+            print("payment shoudl have sent ")
+
+
+# initiate the thread with daemon set to True#
+#daemon_thread = threading.Thread(target=slow_count.start(), name="daemon-thread", daemon=True)
+
+client.run(TOKEN)
