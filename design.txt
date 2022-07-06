@@ -44,6 +44,14 @@ SEPERATE Module 0- status_puller
 
  brew services start postgresql
 
+$psql postgres
+
  createdb rapaygo_invoice
  psql rapaygo_invoice
     copy and paste from create_table.sql to make table
+
+
+   $ \l        --list
+   $ \c rapaygo-invoice;   --enter this db
+   $ \dt    --show date tables
+

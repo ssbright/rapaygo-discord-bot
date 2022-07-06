@@ -11,3 +11,15 @@ amount                      BIGINT      NOT NULL,
 status                      TEXT        NOT NULL,
 UNIQUE(sender, payment_hash, invoice_id)
 );
+
+
+CREATE TABLE user_pos (
+id                          BIGSERIAL   NOT NULL PRIMARY KEY,
+created_at                  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+updated_at                  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+discord_name                TEXT        NOT NULL,
+discord_id                  TEXT        NOT NULL,
+email                       TEXT        NOT NULL,
+password                    TEXT        NOT NULL,
+UNIQUE(email)
+);

@@ -1,12 +1,8 @@
 import psycopg2
 import sys
-import os
-from time import sleep
 sys.path.append('./')
-from api_handler import bot_commands, payment_confirmed_checker
-import discord
-from discord.ext import commands, tasks
-from dotenv import load_dotenv
+from api_handler import  payment_confirmed_checker
+
 from variables import *
 
 

@@ -22,18 +22,18 @@ async def on_ready():
 
 @tasks.loop(seconds=5.0)
 async def slow_count():
-    print("take loop begin")
+
 
     # cur.execute("""select id from invoice_audit where status= 'PENDING'""")
     cur.execute("""select * from invoice_audit""")
     query_results = cur.fetchall()
 
     for row in query_results:
-        time.sleep(1)
+
         # print(f"inspect row {row}")
         payHash = row[4]
         curr_status = row[9]
-        recipient = row[5]
+        recipient = row[6]
         print(curr_status)
         print(payHash)
         if (payment_confirmed_checker(payHash) == "COMPLETED") and (curr_status != "COMPLETED"):

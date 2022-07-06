@@ -3,30 +3,37 @@ import requests
 import json
 import os
 from dotenv import load_dotenv
+import psycopg2
+
+conn = psycopg2.connect("dbname='rapaygo_invoice' user='sydney'")
+cur = conn.cursor()
+cur.execute('select * from user_pos')
+conn.commit()
+
+user_table = cur.fetchall()
+
+user = user_table[0][3]
+
+password = user_table[0][4]
+
+conn.close()
 
 
 
+#Query API to get Access Token from Rapaygo Account
 url1 = "https://api.rapaygo.com/v1/auth/access_token"
-
 load_dotenv()
-Password = os.getenv('PASS')
 
 payload = {
-    "username" : "Ssbright11@gmail.com",
-    "pass_phrase" : Password,
+    "username" : user,
+    "pass_phrase" : password,
     "type" : "pos_user"
 }
 headers = {
   'Authorization': ''
 }
-
 response1 = requests.request("POST", url1, data=json.dumps(payload))
-
-#print(response.text)
-
-
 tokenDict = json.loads(response1.text)
-
 accessToken = tokenDict["access_token"]
 
 
