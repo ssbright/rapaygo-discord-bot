@@ -1,3 +1,6 @@
 #Ignore .env files
 .env
 design.txt
+__pycache__
+venv
+.idea

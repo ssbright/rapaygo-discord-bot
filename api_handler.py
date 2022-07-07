@@ -11,24 +11,35 @@ cur.execute('select * from user_pos')
 conn.commit()
 
 user_table = cur.fetchall()
-
 user = user_table[0][3]
-
 password = user_table[0][4]
 
 conn.close()
 
 
 
-#Query API to get Access Token from Rapaygo Account
-url1 = "https://api.rapaygo.com/v1/auth/access_token"
+# OLD APPROACH Query API to get Access Token from Rapaygo Account
+# url1 = "https://api.rapaygo.com/v1/auth/access_token"
+
+# New APPROACH Use Key Login
+url1 = "https://api.rapaygo.com/v1//auth/key"
+
+
 load_dotenv()
 
-payload = {
-    "username" : user,
-    "pass_phrase" : password,
-    "type" : "pos_user"
+# Old approach
+# payload = {
+#     "username" : user,
+#     "pass_phrase" : password,
+#     "type" : "pos_user"
+# }
+
+# new approach uses key and secret instead
+payload ={
+    "key":user,
+    "secret":password
 }
+
 headers = {
   'Authorization': ''
 }
