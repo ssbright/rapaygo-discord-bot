@@ -9,6 +9,7 @@ recipient                   TEXT        NOT NULL,
 action                      TEXT        NOT NULL,
 amount                      BIGINT      NOT NULL,
 status                      TEXT        NOT NULL,
+channel                     TEXT        NOT NULL,
 UNIQUE(sender, payment_hash, invoice_id)
 );
 

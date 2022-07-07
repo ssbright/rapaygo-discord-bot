@@ -9,10 +9,10 @@ from variables import *
 global conn
 global cur
 
-def persist_invoice(invoice_id,payment_hash,recipient,sender,action,amount):
+def persist_invoice(invoice_id,payment_hash,recipient,sender,action,amount,channel):
     sql = f'''
-    INSERT into invoice_audit (invoice_id, payment_hash, sender, recipient, action, amount, status)
-    VALUES ('{invoice_id}','{payment_hash}','{sender}','{recipient}','{action}',{amount},'PENDING')
+    INSERT into invoice_audit (invoice_id, payment_hash, sender, recipient, action, amount, status, channel)
+    VALUES ('{invoice_id}','{payment_hash}','{sender}','{recipient}','{action}',{amount},'PENDING','{channel}')
     
     '''
     conn = psycopg2.connect("dbname='rapaygo_invoice' user='sydney'")
@@ -40,5 +40,24 @@ def fetch_all_invoice():
         if payment_confirmed_checker(payHash) == "COMPLETED":
             cur.execute("""update audit_invoice set status='COMPLETED'""")
 
+
+def persist_pos(email, password, discord_name, discord_id):
+    sql = f'''
+    INSERT into invoice_audit (invoice_id, payment_hash, sender, recipient, action, amount, status)
+    VALUES ('{email}','{password}','{discord_name}','{discord_id}')
+
+    '''
+    conn = psycopg2.connect("dbname='rapaygo_invoice' user='sydney'")
+    # conn = None
+    # try:
+    #    conn = psycopg2.connect("dbname='rapaygo_invoice' user='postgres'")
+    # except:
+    #    print("I am unable to connect to the database.")
+
+    cur = conn.cursor()
+
+    cur.execute(sql)
+    conn.commit()
+    conn.close()
 
 
