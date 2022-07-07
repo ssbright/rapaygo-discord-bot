@@ -53,7 +53,7 @@ async def on_message(message):  # this event is called when a message is sent by
         if content.strip() == "hello":  # if the message is 'hello', the bot responds with 'Hi!'
             await user.send("Hi!")
         if command_validator(content) == True:
-            await user.send("I got your command!")
+            #await user.send("I got your command!")
             cList = str.split(content)
             atBot = cList[0]
             command = cList[1]
@@ -68,18 +68,19 @@ async def on_message(message):  # this event is called when a message is sent by
 
                 # adds row to databse for invoice generated
                 persist_invoice(tokenDict["invoice_id"], tokenDict["payment_hash"], name, sender, "tip", amount,channelIn)
-
-                await user.send("Here is your payment request: ```{}```".format(tokenDict["payment_request"]))
-                # await channel.send("Here is a link to the decoder: https://lightningdecoder.com/{}".format(tokenDict["payment_request"]))
                 qr = qrcode.make(tokenDict["payment_request"])
                 qrimage = qr.save("invoice.png")
                 # await channel.send("And here is your QR code!")
-                await user.send(file=discord.File("invoice.png"))
+                #await user.send(file=discord.File("invoice.png"))
+
+                await user.send("Here is your payment request: ```{}```".format(tokenDict["payment_request"]),file=discord.File("invoice.png"))
+                # await channel.send("Here is a link to the decoder: https://lightningdecoder.com/{}".format(tokenDict["payment_request"]))
                 os.remove("./invoice.png")
             if command == "register":
-                name = cList[2]
-                password = cList[3]
-                persist_pos(name, password, user, user.id)
+                await user.send("So you want to register?!")
+                key = cList[2]
+                secret = cList[3]
+                persist_pos(key, secret, user, user.id)
 
                 # Polling to see if invoice has been paid
     #This chunk encapsualtes non-DM messages
@@ -87,7 +88,6 @@ async def on_message(message):  # this event is called when a message is sent by
         if content.strip() == "hello":  # if the message is 'hello', the bot responds with 'Hi!'
             await channel.send("Hi!")
         if command_validator(content) == True:
-            await channel.send("I got your command!")
             cList = str.split(content)
             atBot = cList[0]
             command = cList[1]
@@ -103,16 +103,15 @@ async def on_message(message):  # this event is called when a message is sent by
                 # adds row to databse for invoice generated
                 persist_invoice(tokenDict["invoice_id"], tokenDict["payment_hash"], name, sender, "tip", amount, channelIn)
 
-                await channel.send("Here is your payment request: ```{}```".format(tokenDict["payment_request"]))
-                print(tokenDict["payment_request"])
-                # await channel.send("Here is a link to the decoder: https://lightningdecoder.com/{}".format(tokenDict["payment_request"]))
                 qr = qrcode.make(tokenDict["payment_request"])
-                print("make succesfful")
                 qrimage = qr.save("invoice.png")
-                print("qr image succesfull ")
                 # await channel.send("And here is your QR code!")
-                await channel.send(file=discord.File("invoice.png"))
+                #await user.send(file=discord.File("invoice.png"))
+
+                await channel.send("Here is your payment request: ```{}```".format(tokenDict["payment_request"]),file=discord.File("invoice.png"))
+                # await channel.send("Here is a link to the decoder: https://lightningdecoder.com/{}".format(tokenDict["payment_request"]))
                 os.remove("./invoice.png")
+
         pass
 
 

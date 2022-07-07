@@ -43,7 +43,7 @@ def fetch_all_invoice():
 
 def persist_pos(email, password, discord_name, discord_id):
     sql = f'''
-    INSERT into invoice_audit (invoice_id, payment_hash, sender, recipient, action, amount, status)
+    INSERT into user_pos (email, password, discord_name, discord_id)
     VALUES ('{email}','{password}','{discord_name}','{discord_id}')
 
     '''
