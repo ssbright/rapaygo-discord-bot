@@ -44,7 +44,7 @@ def fetch_all_invoice():
 def persist_pos(email, password, discord_name, discord_id):
     sql = f'''
     INSERT into user_pos (email, password, discord_name, discord_id)
-    VALUES ('{email}','{password}','{discord_name}','{discord_id}')
+    VALUES ('{email}','{password}','{discord_name}','<@{discord_id}>')
 
     '''
     conn = psycopg2.connect("dbname='rapaygo_invoice' user='sydney'")
@@ -60,4 +60,33 @@ def persist_pos(email, password, discord_name, discord_id):
     conn.commit()
     conn.close()
 
+def update_pos(email, password, discord_name, discord_id):
+    sql = f'''
+    UPDATE user_pos SET email = '{email}', password = '{password}', discord_id='<@{discord_id}>'
+    WHERE discord_name = '{discord_name}'
+
+    '''
+    conn = psycopg2.connect("dbname='rapaygo_invoice' user='sydney'")
+    # conn = None
+    # try:
+    #    conn = psycopg2.connect("dbname='rapaygo_invoice' user='postgres'")
+    # except:
+    #    print("I am unable to connect to the database.")
+
+    cur = conn.cursor()
+
+    cur.execute(sql)
+    conn.commit()
+    conn.close()
+def check_user_exist(recipient):
+    cur.execute("""select * from user_pos""")
+    query_results = cur.fetchall()
+    for row in query_results:
+        registeredUser =row[6]
+        print(registeredUser)
+        if registeredUser == recipient:
+            return True
+        else:
+            print(f"this recipeint didnt work {recipient} with this registered user {registeredUser}")
+            pass
 
