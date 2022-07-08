@@ -7,7 +7,7 @@ import qrcode.image.svg
 
 
 #local imports
-from command_parser import command_validator
+from command_parser import command_validator, inquiry_command, anyother_message
 from api_handler import bot_commands
 #from pay_status_thread import daemon_thread
 from db.db import persist_invoice, persist_pos, check_user_exist, update_pos
@@ -51,6 +51,22 @@ async def on_message(message):  # this event is called when a message is sent by
     if str.split(str(message.channel))[0] == 'Direct':
         if content.strip() == "hello":  # if the message is 'hello', the bot responds with 'Hi!'
             await user.send("Hi!")
+        if inquiry_command(content) == 1:
+            await user.send('''
+             Yo! 
+             My main purpose is to generate invoices so you can tip someone in Bitcoin Satoshis! The only way to talk to me is to @mention me at the begging of your message. To tip someone type a message in this format:
+             @rapaygo-paybot tip [enter number of sats] @[the discord user]
+             for example:
+             @rapaygo-paybot tip 200 @rapaygo-paybot
+             This would send 200 satoshis to myself!
+             
+             I can only generate an invoice to send funds if the recipient is signup up for rapaygo. To do this please go to https://rapaygo.com/. Once an account is made, generate a pos key. Then DM like this:
+             @rapaygo register [line1_key] [line2_key]
+             If you want to update your keys, becuase they only last for a specified amount of time you can repeat the process in the DM like so:
+             @rapaygo update [line1_key] [line2_key]
+             ''')
+        if anyother_message(content) == True:
+            await user.send("Sorry, I didnt understand that. Type in: @rapaygo-paybot help. That way I can explain to you how I work")
         if command_validator(content) == True:
             #await user.send("I got your command!")
             cList = str.split(content)
@@ -100,6 +116,23 @@ async def on_message(message):  # this event is called when a message is sent by
     else:
         if content.strip() == "hello":  # if the message is 'hello', the bot responds with 'Hi!'
             await channel.send("Hi!")
+        if inquiry_command(content) == 1:
+            await channel.send('''
+             Yo! 
+             My main purpose is to generate invoices so you can tip someone in Bitcoin Satoshis! The only way to talk to me is to @mention me at the begging of your message. To tip someone type a message in this format:
+             @rapaygo-paybot tip [enter number of sats] @[the discord user]
+             for example:
+             @rapaygo-paybot tip 200 @rapaygo-paybot
+             This would send 200 satoshis to myself!
+
+             I can only generate an invoice to send funds if the recipient is signup up for rapaygo. To do this please go to https://rapaygo.com/. Once an account is made, generate a pos key. Then DM like this:
+             @rapaygo register [line1_key] [line2_key]
+             If you want to update your keys, becuase they only last for a specified amount of time you can repeat the process in the DM like so:
+             @rapaygo update [line1_key] [line2_key]
+             ''')
+        if anyother_message(content) == True:
+            await channel.send(
+                "Sorry, I didnt understand that. Type in: @rapaygo-paybot help. That way I can explain to you how I work")
         if command_validator(content) == True:
             cList = str.split(content)
             atBot = cList[0]
