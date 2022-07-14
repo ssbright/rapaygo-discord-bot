@@ -8,7 +8,7 @@ import qrcode.image.svg
 
 #local imports
 from command_parser import command_validator, inquiry_command, anyother_message
-from api_handler import bot_commands
+from api_handler import bot_commands, get_access_token
 #from pay_status_thread import daemon_thread
 from db.db import persist_invoice, persist_pos, check_user_exist, check_user_status, update_pos
 from variables import *
@@ -64,8 +64,6 @@ async def on_message(message):  # this event is called when a message is sent by
         return
 
     print("Received a message:", content)
-    print(message.author)
-    print(client.user)
     #This Chunck encapsulates DM messages
     if str.split(str(message.channel))[0] == 'Direct':
         content2 ="<@984815715544617011> " + str(content)
@@ -92,10 +90,10 @@ async def on_message(message):  # this event is called when a message is sent by
             name = cList[3]
             # If..else for generating the invoice using the format @bot paid? {payment_hash} @recipient
             if command == "tip":
-                bot_commands(command, amount, name)
+                bot_commands(user,command, amount, name)
                 sender = message.author
                 channelIn = 'DM'
-                tokenDict = bot_commands(command, amount, name)
+                tokenDict = bot_commands(user,command, amount, name)
                 #Now, bot checks if the recipient exists in rapaygo system
                 if check_user_exist(str(name)) == True:
                     # adds row to databse for invoice generated
@@ -133,6 +131,9 @@ async def on_message(message):  # this event is called when a message is sent by
     else:
         if content.strip() == "hello":  # if the message is 'hello', the bot responds with 'Hi!'
             await channel.send("Hi!")
+      #  if content.strip() == "test":  # if the message is 'hello', the bot responds with 'Hi!'
+      #      get_access_token(user)
+      #      await channel.send("Hi!")
         if inquiry_command(content) == 1:
             await channel.send(helpMessage)
 
@@ -146,10 +147,10 @@ async def on_message(message):  # this event is called when a message is sent by
             name = cList[3]
             # If..else for generating the invoice using the format @bot paid? {payment_hash} @recipient
             if command == "tip":
-                bot_commands(command, amount, name)
+                bot_commands(user ,command, amount, name)
                 sender = message.author
                 channelIn = str(str.split(str(message.channel.id))[0])
-                tokenDict = bot_commands(command, amount, name)
+                tokenDict = bot_commands(user,command, amount, name)
 
                 if check_user_exist(str(name)) == True:
                     # adds row to databse for invoice generated

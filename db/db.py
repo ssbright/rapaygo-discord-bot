@@ -33,8 +33,6 @@ def fetch_all_invoice():
     #cur.execute("""select id from invoice_audit where status= 'PENDING'""")
     cur.execute("""select * from invoice_audit""")
     query_results = cur.fetchall()
-    print(query_results)
-    print(query_results[1][4])
     for row in query_results:
         payHash =row[4]
         if payment_confirmed_checker(payHash) == "COMPLETED":

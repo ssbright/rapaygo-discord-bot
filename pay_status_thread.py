@@ -56,8 +56,6 @@ async def slow_count():
         curr_status = row[9]
         recipient = row[6]
         channelID = row[10]
-        print(curr_status)
-        print(payHash)
         if (payment_confirmed_checker(payHash) == "COMPLETED") and (curr_status != "COMPLETED"):
 
             if channelID == 'DM':
@@ -65,10 +63,6 @@ async def slow_count():
                 conn.commit()
                 altRecipient = recipient[2:-1]
                 user = await client.fetch_user(int(altRecipient))
-                print(altRecipient)
-                print(type(altRecipient))
-                print(user)
-                print(type(user))
                 await user.send(f"{recipient} got tipped in Sats! ")
                 print("payment shoudl have sent ")
             else:

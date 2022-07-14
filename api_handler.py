@@ -5,48 +5,47 @@ import os
 from dotenv import load_dotenv
 import psycopg2
 
-conn = psycopg2.connect("dbname='rapaygo_invoice' user='sydney'")
-cur = conn.cursor()
-cur.execute('select * from user_pos')
-conn.commit()
 
-user_table = cur.fetchall()
-user = user_table[0][3]
-password = user_table[0][4]
+def get_access_token(user):
+  conn = psycopg2.connect("dbname='rapaygo_invoice' user='sydney'")
+  cur = conn.cursor()
+  cur.execute('select * from user_pos')
+  conn.commit()
 
-conn.close()
-
-# OLD APPROACH Query API to get Access Token from Rapaygo Account
-# url1 = "https://api.rapaygo.com/v1/auth/access_token"
-
-# New APPROACH Use Key Login
-url1 = "https://api.rapaygo.com/v1//auth/key"
-
-load_dotenv()
-
-# Old approach
-# payload = {
-#     "username" : user,
-#     "pass_phrase" : password,
-#     "type" : "pos_user"
-# }
-
-# new approach uses key and secret instead
-payload = {
-  "key": user,
-  "secret": password
-}
-
-headers = {
-  'Authorization': ''
-}
-response1 = requests.request("POST", url1, data=json.dumps(payload))
-tokenDict = json.loads(response1.text)
-accessToken = tokenDict["access_token"]
+  user_table = cur.fetchall()
 
 
-def bot_commands(command, amount, recipient):
+  url1 = "https://api.rapaygo.com/v1//auth/key"
+
+  load_dotenv()
+
+  for row in user_table:
+    discord_name = row[5]
+    if str(user) == str(discord_name):
+      email = row[3]
+      password = row[4]
+      payload = {
+        "key": email,
+        "secret": password
+      }
+
+      headers = {
+        'Authorization': ''
+      }
+      response1 = requests.request("POST", url1, data=json.dumps(payload))
+      tokenDict = json.loads(response1.text)
+      accessToken = tokenDict["access_token"]
+      return accessToken
+    else:
+      pass
+
+  conn.close()
+
+
+
+def bot_commands(user ,command, amount, recipient):
   # Invoice Generator Command
+  accessToken = get_access_token(user)
   if command == "tip":
     url2 = "https://api.rapaygo.com/v1/invoice_payment/ln/invoice"
 
