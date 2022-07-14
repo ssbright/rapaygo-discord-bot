@@ -82,9 +82,9 @@ def check_user_exist(recipient):
     cur.execute("""select * from user_pos""")
     query_results = cur.fetchall()
     for row in query_results:
-        registeredUser =row[6]
+        registeredUser =row[5]
         print(registeredUser)
-        if registeredUser == recipient:
+        if str(registeredUser) == str(recipient):
             return True
         else:
             print(f"this recipeint didnt work {recipient} with this registered user {registeredUser}")

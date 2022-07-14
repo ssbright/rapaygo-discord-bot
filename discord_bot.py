@@ -30,6 +30,24 @@ async def on_member_join(member):
     )
 
 
+helpMessage='''
+             Yo! 
+             My main purpose is to generate invoices so you can tip someone in Bitcoin Satoshis! The only way to talk to me is to @mention me at the begging of your message (no need to @mention me if in DM). To tip someone type a message in this format:
+             @rapaygo-paybot tip [enter number of sats] @[the discord user]
+             for example:
+             @rapaygo-paybot tip 200 @rapaygo-paybot
+             This would send 200 satoshis to myself!
+             
+             I also have some DM only commands:
+             I can only generate an invoice to send funds if the recipient is signup up for rapaygo. To do this please go to https://rapaygo.com/. Once an account is made, generate a pos key. Then DM like this:
+             register <API Key> <API Key Secret> 
+             If you want to update your keys, becuase they only last for a specified amount of time you can repeat the process in the DM like so:
+             update <API Key> <API Key Secret> 
+             You can ask me if you are registered by typing:
+             status
+             
+             
+             '''
 
 
 @client.event
@@ -39,38 +57,36 @@ async def on_message(message):  # this event is called when a message is sent by
     # this is the sender of the Message
     user = message.author
     # this is the channel of there the message is sent
-    channel = client.get_channel(int(CHANNEL_ID))
+    channel = client.get_channel(int(message.channel.id))
 
     # if the user is the client user itself, ignore the message
     if user == client.user:
         return
 
     print("Received a message:", content)
-
+    print(message.author)
+    print(client.user)
     #This Chunck encapsulates DM messages
     if str.split(str(message.channel))[0] == 'Direct':
+        content2 ="<@984815715544617011> " + str(content)
         if content.strip() == "hello":  # if the message is 'hello', the bot responds with 'Hi!'
             await user.send("Hi!")
-        if inquiry_command(content) == 1:
-            await user.send('''
-             Yo! 
-             My main purpose is to generate invoices so you can tip someone in Bitcoin Satoshis! The only way to talk to me is to @mention me at the begging of your message. To tip someone type a message in this format:
-             @rapaygo-paybot tip [enter number of sats] @[the discord user]
-             for example:
-             @rapaygo-paybot tip 200 @rapaygo-paybot
-             This would send 200 satoshis to myself!
-             
-             I can only generate an invoice to send funds if the recipient is signup up for rapaygo. To do this please go to https://rapaygo.com/. Once an account is made, generate a pos key. Then DM like this:
-             @rapaygo register [line1_key] [line2_key]
-             If you want to update your keys, becuase they only last for a specified amount of time you can repeat the process in the DM like so:
-             @rapaygo update [line1_key] [line2_key]
-             ''')
-        if anyother_message(content) == True:
-            await user.send("Sorry, I didnt understand that. Type in: @rapaygo-paybot help. That way I can explain to you how I work")
-        if command_validator(content) == True:
+        if inquiry_command(content2) == 1:
+            await user.send(helpMessage)
+        if inquiry_command(content2) == 2:
+            cList = str.split(content2)
+            await user.send("So you are wondering if you are registered with rapaygo?")
+            user = message.author
+            if check_user_exist(user) == True:
+                await user.send("Yup! You are registered!")
+            else:
+                await user.send("Sorry, you are not registered yet! Please type help to learn how to register")
+
+        if anyother_message(content2) == True:
+            await user.send("Sorry, I didnt understand that. Type in: help. That way I can explain to you how I work")
+        if command_validator(content2) == True:
             #await user.send("I got your command!")
-            cList = str.split(content)
-            atBot = cList[0]
+            cList = str.split(content2)
             command = cList[1]
             amount = cList[2]
             name = cList[3]
@@ -112,30 +128,19 @@ async def on_message(message):  # this event is called when a message is sent by
                 await user.send("Ok! I successfully did so!")
 
                 # Polling to see if invoice has been paid
+
     #This chunk encapsualtes non-DM messages
     else:
         if content.strip() == "hello":  # if the message is 'hello', the bot responds with 'Hi!'
             await channel.send("Hi!")
         if inquiry_command(content) == 1:
-            await channel.send('''
-             Yo! 
-             My main purpose is to generate invoices so you can tip someone in Bitcoin Satoshis! The only way to talk to me is to @mention me at the begging of your message. To tip someone type a message in this format:
-             @rapaygo-paybot tip [enter number of sats] @[the discord user]
-             for example:
-             @rapaygo-paybot tip 200 @rapaygo-paybot
-             This would send 200 satoshis to myself!
+            await channel.send(helpMessage)
 
-             I can only generate an invoice to send funds if the recipient is signup up for rapaygo. To do this please go to https://rapaygo.com/. Once an account is made, generate a pos key. Then DM like this:
-             @rapaygo register [line1_key] [line2_key]
-             If you want to update your keys, becuase they only last for a specified amount of time you can repeat the process in the DM like so:
-             @rapaygo update [line1_key] [line2_key]
-             ''')
         if anyother_message(content) == True:
             await channel.send(
                 "Sorry, I didnt understand that. Type in: @rapaygo-paybot help. That way I can explain to you how I work")
         if command_validator(content) == True:
             cList = str.split(content)
-            atBot = cList[0]
             command = cList[1]
             amount = cList[2]
             name = cList[3]

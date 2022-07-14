@@ -21,12 +21,21 @@ def inquiry_command(string):
         return 1
     if inquiry == "help":
         return 1
+    if inquiry == "status":
+        return 2
     return False
 
 def anyother_message(string):
-    if command_validator(string) == False and inquiry_command(string) == False and string!="hello":
-        return True
-    else:
-        return False
+    if len(str.split(string)) >= 1:
+        cList = str.split(string)
+        atBot = cList[0]
+        print(f"this is the string {string}")
+        if atBot == "<@984815715544617011>":
+            if command_validator(string) == False and inquiry_command(string) == False and string != "<@984815715544617011> hello":
+                return True
+            else:
+                return False
+        else:
+            return False
 
 
