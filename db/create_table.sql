@@ -18,9 +18,9 @@ CREATE TABLE user_pos (
 id                          BIGSERIAL   NOT NULL PRIMARY KEY,
 created_at                  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 updated_at                  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+api_key                      TEXT        NOT NULL,
+api_secret                    TEXT        NOT NULL,
 discord_name                TEXT        NOT NULL,
 discord_id                  TEXT        NOT NULL,
-email                       TEXT        NOT NULL,
-password                    TEXT        NOT NULL,
-UNIQUE(email)
+UNIQUE(api_key,api_secret)
 );

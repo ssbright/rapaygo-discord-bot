@@ -39,10 +39,10 @@ def fetch_all_invoice():
             cur.execute("""update audit_invoice set status='COMPLETED'""")
 
 
-def persist_pos(email, password, discord_name, discord_id):
+def persist_pos(key, secret, discord_name, discord_id):
     sql = f'''
-    INSERT into user_pos (email, password, discord_name, discord_id)
-    VALUES ('{email}','{password}','{discord_name}','<@{discord_id}>')
+    INSERT into user_pos (api_key, api_secret, discord_name, discord_id)
+    VALUES ('{key}','{secret}','{discord_name}','<@{discord_id}>')
 
     '''
     conn = psycopg2.connect("dbname='rapaygo_invoice' user='sydney'")
