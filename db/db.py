@@ -60,7 +60,7 @@ def persist_pos(key, secret, discord_name, discord_id):
 
 def update_pos(key, secret, discord_name, discord_id):
     sql = f'''
-    UPDATE user_pos SET email = '{key}', password = '{secret}', discord_id='<@{discord_id}>'
+    UPDATE user_pos SET api_key = '{key}', api_secret = '{secret}', discord_id='<@{discord_id}>'
     WHERE discord_name = '{discord_name}'
 
     '''
