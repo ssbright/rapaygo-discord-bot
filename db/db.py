@@ -78,7 +78,7 @@ def update_pos(email, password, discord_name, discord_id):
     cur.execute(sql)
     conn.commit()
     conn.close()
-def check_user_exist(recipient):
+def check_user_status(recipient):
     cur.execute("""select * from user_pos""")
     query_results = cur.fetchall()
     for row in query_results:
@@ -90,3 +90,14 @@ def check_user_exist(recipient):
             print(f"this recipeint didnt work {recipient} with this registered user {registeredUser}")
             pass
 
+def check_user_exist(recipient):
+    cur.execute("""select * from user_pos""")
+    query_results = cur.fetchall()
+    for row in query_results:
+        registeredUser =row[6]
+        print(registeredUser)
+        if registeredUser == recipient:
+            return True
+        else:
+            print(f"this recipeint didnt work {recipient} with this registered user {registeredUser}")
+            pass

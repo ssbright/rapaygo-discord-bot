@@ -10,7 +10,7 @@ import qrcode.image.svg
 from command_parser import command_validator, inquiry_command, anyother_message
 from api_handler import bot_commands
 #from pay_status_thread import daemon_thread
-from db.db import persist_invoice, persist_pos, check_user_exist, update_pos
+from db.db import persist_invoice, persist_pos, check_user_exist, check_user_status, update_pos
 from variables import *
 
 
@@ -77,7 +77,7 @@ async def on_message(message):  # this event is called when a message is sent by
             cList = str.split(content2)
             await user.send("So you are wondering if you are registered with rapaygo?")
             user = message.author
-            if check_user_exist(user) == True:
+            if check_user_status(user) == True:
                 await user.send("Yup! You are registered!")
             else:
                 await user.send("Sorry, you are not registered yet! Please type help to learn how to register")
