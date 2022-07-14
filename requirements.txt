@@ -1,8 +1,9 @@
+aiohttp==3.8.0
 discord
 discord-py-slash-command
 python-dotenv
 discord-ext-bot
-psycopg2
+psycopg2-binary
 qrcode
 requests
 pillow
