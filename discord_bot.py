@@ -90,10 +90,10 @@ async def on_message(message):  # this event is called when a message is sent by
             name = cList[3]
             # If..else for generating the invoice using the format @bot paid? {payment_hash} @recipient
             if command == "tip":
-                bot_commands(user,command, amount, name)
+                tokenDict = bot_commands(command, amount, name)
                 sender = message.author
                 channelIn = 'DM'
-                tokenDict = bot_commands(user,command, amount, name)
+               # tokenDict = bot_commands(command, amount, name)
                 #Now, bot checks if the recipient exists in rapaygo system
                 if check_user_exist(str(name)) == True:
                     # adds row to databse for invoice generated
@@ -147,10 +147,10 @@ async def on_message(message):  # this event is called when a message is sent by
             name = cList[3]
             # If..else for generating the invoice using the format @bot paid? {payment_hash} @recipient
             if command == "tip":
-                bot_commands(user ,command, amount, name)
+                tokenDict = bot_commands(command, amount, name)
                 sender = message.author
                 channelIn = str(str.split(str(message.channel.id))[0])
-                tokenDict = bot_commands(user,command, amount, name)
+                #tokenDict = bot_commands(command, amount, name)
 
                 if check_user_exist(str(name)) == True:
                     # adds row to databse for invoice generated

@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import psycopg2
 
 
-def get_access_token(user):
+def get_access_token(recipient):
   conn = psycopg2.connect("dbname='rapaygo_invoice' user='sydney'")
   cur = conn.cursor()
   cur.execute('select * from user_pos')
@@ -20,8 +20,10 @@ def get_access_token(user):
   load_dotenv()
 
   for row in user_table:
-    discord_name = row[5]
-    if str(user) == str(discord_name):
+    discord_id = row[6]
+    print(f"this is the result of recipeint input : {recipient}")
+    print(f"this is the reuslt of the discord name of table : {discord_id}")
+    if str(recipient) == str(discord_id):
       email = row[3]
       password = row[4]
       payload = {
@@ -43,9 +45,9 @@ def get_access_token(user):
 
 
 
-def bot_commands(user ,command, amount, recipient):
+def bot_commands(command, amount, recipient):
   # Invoice Generator Command
-  accessToken = get_access_token(user)
+  accessToken = get_access_token(recipient)
   if command == "tip":
     url2 = "https://api.rapaygo.com/v1/invoice_payment/ln/invoice"
 
