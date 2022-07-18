@@ -63,8 +63,6 @@ def bot_commands(command, amount, recipient):
 
     print(response.text)
     tokenDict = json.loads(response.text)
-    payment_req = tokenDict["payment_request"]
-    payment_hash = tokenDict["payment_hash"]
     return tokenDict
 
 

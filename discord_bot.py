@@ -8,7 +8,7 @@ import qrcode.image.svg
 
 #local imports
 from command_parser import command_validator, inquiry_command, anyother_message
-from api_handler import bot_commands, get_access_token
+from api_handler import bot_commands
 #from pay_status_thread import daemon_thread
 from db.db import persist_invoice, persist_pos, check_user_exist, check_user_status, update_pos
 from variables import *
@@ -69,11 +69,13 @@ async def on_message(message):  # this event is called when a message is sent by
         content2 ="<@984815715544617011> " + str(content)
         if content.strip() == "hello":  # if the message is 'hello', the bot responds with 'Hi!'
             await user.send("Hi!")
+        if content.strip() == "Hello":  # if the message is 'hello', the bot responds with 'Hi!'
+            await user.send("Hi!")
         if inquiry_command(content2) == 1:
             await user.send(helpMessage)
         if inquiry_command(content2) == 2:
             cList = str.split(content2)
-            await user.send("So you are wondering if you are registered with rapaygo?")
+            await user.send("So you are wondering if you are registered with rapaygo? Give me one moment please.")
             user = message.author
             if check_user_status(user) == True:
                 await user.send("Yup! You are registered!")
@@ -87,17 +89,17 @@ async def on_message(message):  # this event is called when a message is sent by
             cList = str.split(content2)
             command = cList[1]
             amount = cList[2]
-            name = cList[3]
+            recipient = cList[3]
             # If..else for generating the invoice using the format @bot paid? {payment_hash} @recipient
             if command == "tip":
-                tokenDict = bot_commands(command, amount, name)
+                tokenDict = bot_commands(command, amount, recipient)
                 sender = message.author
                 channelIn = 'DM'
                # tokenDict = bot_commands(command, amount, name)
                 #Now, bot checks if the recipient exists in rapaygo system
-                if check_user_exist(str(name)) == True:
+                if check_user_exist(str(recipient)) == True:
                     # adds row to databse for invoice generated
-                    persist_invoice(tokenDict["invoice_id"], tokenDict["payment_hash"], name, sender, "tip", amount,channelIn)
+                    persist_invoice(tokenDict["invoice_id"], tokenDict["payment_hash"], sender, recipient, "tip", amount,channelIn)
                     qr = qrcode.make(tokenDict["payment_request"])
                     qrimage = qr.save("invoice.png")
                     # await channel.send("And here is your QR code!")
@@ -113,13 +115,13 @@ async def on_message(message):  # this event is called when a message is sent by
                 '''
                 )
             if command == "register":
-                await user.send("So you want to register?!")
+                await user.send("So you want to register?! Give me one moment, if I don't reply soon, I might have bugs.")
                 key = cList[2]
                 secret = cList[3]
                 persist_pos(key, secret, user, user.id)
                 await user.send("Ok! I successfully did so!")
             if command == "update":
-                await user.send("So you want to update your keys?!")
+                await user.send("So you want to update your keys?! Give me one moment, if I don't reply soon, I might have bugs.")
                 key = cList[2]
                 secret = cList[3]
                 update_pos(key, secret, user, user.id)
@@ -147,12 +149,13 @@ async def on_message(message):  # this event is called when a message is sent by
             name = cList[3]
             # If..else for generating the invoice using the format @bot paid? {payment_hash} @recipient
             if command == "tip":
-                tokenDict = bot_commands(command, amount, name)
-                sender = message.author
-                channelIn = str(str.split(str(message.channel.id))[0])
-                #tokenDict = bot_commands(command, amount, name)
 
+                sender = message.author
                 if check_user_exist(str(name)) == True:
+                    tokenDict = bot_commands(command, amount, name)
+
+                    channelIn = str(str.split(str(message.channel.id))[0])
+                    # tokenDict = bot_commands(command, amount, name)
                     # adds row to databse for invoice generated
                     persist_invoice(tokenDict["invoice_id"], tokenDict["payment_hash"], name, sender, "tip", amount, channelIn)
 
@@ -166,7 +169,7 @@ async def on_message(message):  # this event is called when a message is sent by
                     os.remove("./invoice.png")
                 else:
                     await channel.send("Sorry I don't know who this is!")
-                    await channel.send(f"Hey {name}! {sender} wants to tip you in Sats! However, you are not currently registered with rapaygo. If you feel like getting tipped, please go to this website:  https://rapaygo.com/. Once you make an account, generate a POS key. There will be two keys (line1 and line2). Then DM in the format: @rapaygo-paybot register line1_key line2_key. Once you do that, you can get tipped in Sats!_")
+                    await channel.send(f"Hey {name}! {sender} wants to tip you in Sats! However, you are not currently registered with rapaygo. If you feel like getting tipped, please go to this website:  https://rapaygo.com/. Once you make an account, generate a POS key. There will be two keys (API Key and API Key Secret). Then DM in the format: @rapaygo-paybot register line1_key line2_key. Once you do that, you can get tipped in Sats!_")
 
         pass
 

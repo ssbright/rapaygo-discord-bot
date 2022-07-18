@@ -31,7 +31,7 @@ def anyother_message(string):
         atBot = cList[0]
         print(f"this is the string {string}")
         if atBot == "<@984815715544617011>":
-            if command_validator(string) == False and inquiry_command(string) == False and string != "<@984815715544617011> hello":
+            if command_validator(string) == False and inquiry_command(string) == False and string != "<@984815715544617011> hello" and string != "<@984815715544617011> Hello":
                 return True
             else:
                 return False
