@@ -1,0 +1,62 @@
+@startuml
+
+:Message Actor (tipper): as Actor
+:Rapaygo Paybot: as Bot
+:Rapaygo Invoice\nPolling Task: as Task
+
+:Invoice Generator\n(being tipped): as IG
+
+(Creates Invoice) as I_Create
+(Receive Event) as E_Recieve
+(Parses Event) as E_Parse
+
+(Handle Help) as E_Type_Help
+(Handle Tip Request) as E_Type_Tip
+(Update Credentials) as E_Manage_Creds
+(Lookup Credentials) as E_Read_Creds
+(Polling Invoice Payment) as IP_Poll
+(Send Paid Message) as IP_Message
+(Update Invoice State) as IP_Update_State
+
+'==============
+
+
+IG-I_Create
+
+Bot-E_Recieve
+Bot--E_Parse
+note right
+during parse determines if action
+is possible in the mode DM or channel
+end note
+
+Task-IP_Poll
+Task-IP_Message
+Task--IP_Update_State
+Actor-IP_Message
+note right
+if the state changes send
+paid message to the channel
+end note
+
+E_Parse--E_Type_Help
+E_Parse--E_Type_Tip
+E_Parse--E_Manage_Creds
+E_Parse--I_Create
+
+Bot--I_Create
+note left
+the user being mentioned
+by the tipper is looked up 
+by the bot and an invoice is
+created on their behalf
+end note
+
+Actor-E_Type_Help
+Actor--E_Manage_Creds
+Actor--E_Type_Tip
+
+E_Manage_Creds--E_Read_Creds: message actor creds
+I_Create--E_Read_Creds: person being tipped creds
+
+@enduml
