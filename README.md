@@ -7,6 +7,8 @@ Lightning Payment Discord Bot
 * allows DM to set credentials
 * can protect access to the guild channels by requesting payment
 
+![use case](out/docs/use-base/use-base.png)
+
 # building and running
 
 ## using pyenv
