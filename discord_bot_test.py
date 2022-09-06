@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import os
 from discord.ext import commands
 from discord_slash import SlashCommand
+import lnd_grpc
 
 
 
@@ -23,6 +24,10 @@ GUILD = os.getenv('DISCORD_GUILD')
 GUILD_ID = os.getenv('DISCORD_GUILD_ID')
 CHANNEL_ID= os.getenv('DISCORD_CHANNEL_ID_TEST')
 BOT_ID=os.getenv('DISCORD_BOT_ID')
+LND_FOLDER=os.getenv('LND_FOLDER')
+LND_MACAROON_FILE= os.getenv('LND_MACAROON_FILE')
+LND_TLS_CERT_FILE=os.getenv('LND_TLS_CERT_FILE')
+LND_RPC_HOST=os.getenv('LND_RPC_HOST')
 
 client = commands.Bot(command_prefix="!")
 slash = SlashCommand(client, sync_commands=True)
@@ -30,7 +35,13 @@ slash = SlashCommand(client, sync_commands=True)
 conn = psycopg2.connect("dbname='rapaygo_invoice' user='sydney'")
 cur = conn.cursor()
 
+lnd_rpc = lnd_grpc.Client(
+    lnd_dir=LND_FOLDER,
+    macaroon_path=LND_MACAROON_FILE,
+    tls_cert_path=LND_TLS_CERT_FILE,
+    grpc_host=LND_RPC_HOST,
 
+)
 
 @client.event
 async def on_ready():
@@ -131,6 +142,7 @@ async def on_message(message):  # this event is called when a message is sent by
                 Sorry, I do not know who that is. That being said, if you would like to share with them this link: https://rapaygo.com/, they could sign up to recieve tips. Full instructions are listed here for how to set me up. I would do this myself, however I am a bot who refuses to spam other people's DMs.
                 '''
                 )
+
             if command == "register":
                 await user.send("So you want to register?! Give me one moment, if I don't reply soon, I might have bugs.")
                 key = cList[2]
@@ -187,7 +199,15 @@ async def on_message(message):  # this event is called when a message is sent by
                 else:
                     await channel.send("Sorry I don't know who this is!")
                     await channel.send(f"Hey {name}! {sender} wants to tip you in Sats! However, you are not currently registered with rapaygo. If you feel like getting tipped, please go to this website:  https://rapaygo.com/. Once you make an account, generate a POS key. There will be two keys (API Key and API Key Secret). Then DM in the format: @rapaygo-paybot register line1_key line2_key. Once you do that, you can get tipped in Sats!_")
+            if command == "tips":
+                lnd_rpc.add_invoice("Invoice from discord user {}".format(user),amount,3600);
+                #qr = qrcode.make(tokenDict["payment_request"])
+                #qrimage = qr.save("invoice.png")
+                #await user.send("Here is your payment request: ```{}```".format(tokenDict["payment_request"]),
+                #                file=discord.File("invoice.png"))
 
+                # print(lnd_rpc.list_invoices());
+                await channel.send("invoice made!")
         pass
 
 

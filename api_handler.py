@@ -63,6 +63,7 @@ def bot_commands(command, amount, recipient):
 
     print(response.text)
     tokenDict = json.loads(response.text)
+    print("tokenDict", tokenDict)
     return tokenDict
 
 

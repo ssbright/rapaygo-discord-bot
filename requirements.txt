@@ -7,3 +7,4 @@ psycopg2-binary
 qrcode
 requests
 pillow
+lnd_grpc
