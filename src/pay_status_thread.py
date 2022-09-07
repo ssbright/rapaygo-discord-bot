@@ -2,7 +2,7 @@
 # import threading
 # import time
 from variables import *
-from src.api_handler import payment_confirmed_checker
+from api_handler import payment_confirmed_checker
 from discord.ext import tasks
 
 
