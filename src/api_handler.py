@@ -35,6 +35,7 @@ def get_access_token(recipient):
         'Authorization': ''
       }
       response1 = requests.request("POST", url1, data=json.dumps(payload))
+      print(response1)
       tokenDict = json.loads(response1.text)
       accessToken = tokenDict["access_token"]
       return accessToken
@@ -61,9 +62,9 @@ def bot_commands(command, amount, recipient):
     }
     response = requests.request("POST", url2, headers=headers, data=json.dumps(payload))
 
-    print(response.text)
+    #print(response.text)
     tokenDict = json.loads(response.text)
-    print("tokenDict", tokenDict)
+    #print("tokenDict", tokenDict)
     return tokenDict
 
 

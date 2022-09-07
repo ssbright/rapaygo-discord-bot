@@ -157,7 +157,7 @@ async def on_message(message):  # this event is called when a message is sent by
                     channelIn = str(str.split(str(message.channel.id))[0])
                     # tokenDict = bot_commands(command, amount, name)
                     # adds row to databse for invoice generated
-                    persist_invoice(tokenDict["invoice_id"], tokenDict["payment_hash"], name, sender, "tip", amount, channelIn)
+                    persist_invoice(tokenDict["id"], tokenDict["payment_hash"], name, sender, "tip", amount, channelIn)
 
                     qr = qrcode.make(tokenDict["payment_request"])
                     qrimage = qr.save("invoice.png")

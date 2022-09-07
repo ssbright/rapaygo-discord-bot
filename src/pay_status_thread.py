@@ -1,12 +1,8 @@
-import logging
-import threading
-import time
-
 # import logging
 # import threading
 # import time
 from variables import *
-from api_handler import payment_confirmed_checker
+from src.api_handler import payment_confirmed_checker
 from discord.ext import tasks
 
 

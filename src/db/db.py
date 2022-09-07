@@ -1,6 +1,5 @@
-import psycopg2
 import sys
-sys.path.append('./')
+sys.path.append('/')
 from api_handler import  payment_confirmed_checker
 
 from variables import *
