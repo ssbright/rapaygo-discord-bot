@@ -9,3 +9,4 @@ requests
 pillow
 lnd_grpc
 pybase64
+config

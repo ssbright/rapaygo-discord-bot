@@ -8,7 +8,7 @@ import lnd_grpc
 import qrcode
 import qrcode.image.svg
 import discord
-
+import configparser
 
 #local imports
 from command_parser import command_validator, inquiry_command, anyother_message
@@ -23,10 +23,10 @@ GUILD = os.getenv('DISCORD_GUILD')
 GUILD_ID = os.getenv('DISCORD_GUILD_ID')
 CHANNEL_ID= os.getenv('DISCORD_CHANNEL_ID_TEST')
 BOT_ID=os.getenv('DISCORD_BOT_ID')
-LND_FOLDER=os.getenv('LND_FOLDER')
-LND_MACAROON_FILE= os.getenv('LND_MACAROON_FILE')
-LND_TLS_CERT_FILE=os.getenv('LND_TLS_CERT_FILE')
-LND_RPC_HOST=os.getenv('LND_RPC_HOST')
+
+config = configparser.ConfigParser()
+config.read(os.path.join(os.getcwd(), 'ini/config.ini'))
+
 
 client = commands.Bot(command_prefix="!")
 slash = SlashCommand(client, sync_commands=True)
@@ -34,13 +34,7 @@ slash = SlashCommand(client, sync_commands=True)
 conn = psycopg2.connect("dbname='rapaygo_invoice' user='sydney'")
 cur = conn.cursor()
 
-lnd_rpc = lnd_grpc.Client(
-    lnd_dir=LND_FOLDER,
-    macaroon_path=LND_MACAROON_FILE,
-    tls_cert_path=LND_TLS_CERT_FILE,
-    grpc_host=LND_RPC_HOST,
 
-)
 
 @client.event
 async def on_ready():
@@ -127,8 +121,25 @@ async def on_message(message):  # this event is called when a message is sent by
 
     #This chunk encapsualtes non-DM messages
     else:
+
+        #Deine the RPC client for specifc channel from config file
+        LND_FOLDER = config[str(channel.id)]['LND_FOLDER']
+        LND_MACAROON_FILE = config[str(channel.id)]['LND_MACAROON_FILE']
+        LND_TLS_CERT_FILE = config[str(channel.id)]['LND_TLS_CERT_FILE']
+        LND_RPC_HOST = config[str(channel.id)]['LND_RPC_HOST']
+
+        lnd_rpc = lnd_grpc.Client(
+            lnd_dir=LND_FOLDER,
+            macaroon_path=LND_MACAROON_FILE,
+            tls_cert_path=LND_TLS_CERT_FILE,
+            grpc_host=LND_RPC_HOST,
+
+        )
+
+
         if content.strip() == "hello":  # if the message is 'hello', the bot responds with 'Hi!'
             await channel.send("Hi!")
+            print(LND_RPC_HOST)
       #  if content.strip() == "test":  # if the message is 'hello', the bot responds with 'Hi!'
       #      get_access_token(user)
       #      await channel.send("Hi!")
