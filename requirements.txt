@@ -8,3 +8,4 @@ qrcode
 requests
 pillow
 lnd_grpc
+pybase64
