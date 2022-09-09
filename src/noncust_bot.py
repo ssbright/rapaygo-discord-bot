@@ -12,6 +12,7 @@ import discord
 
 #local imports
 from command_parser import command_validator, inquiry_command, anyother_message
+from db.db import persist_invoice_nc
 
 #from pay_status_thread import daemon_thread
 from db.db import check_user_status
@@ -146,11 +147,14 @@ async def on_message(message):  # this event is called when a message is sent by
             # If..else for generating the invoice using the format @bot paid? {payment_hash} @recipient
             if command == "tip":
                 print("invoice triggered")
+                channelIn = str(str.split(str(message.channel.id))[0])
                 await channel.send("invoice triggered")
                 user = message.author
                 lnd_rpc.add_invoice("Invoice from discord user {}".format(user), int(amount), 3600);
                 invoices = lnd_rpc.list_invoices()
-                qr = qrcode.make(invoices.invoices._values[-1].payment_request)
+                paymentHash = invoices.invoices._values[-1].payment_request
+                persist_invoice_nc(paymentHash, name, user, "tip", amount, channelIn)
+                qr = qrcode.make(paymentHash)
                 qr.save("invoice.png")
                 await channel.send("Here is your payment request: ```{}```".format(invoices.invoices._values[-1].payment_request),
                                 file=discord.File("invoice.png"))

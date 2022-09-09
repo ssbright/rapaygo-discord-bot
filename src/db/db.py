@@ -27,6 +27,26 @@ def persist_invoice(invoice_id,payment_hash,recipient,sender,action,amount,chann
     conn.commit()
     conn.close()
 
+
+def persist_invoice_nc(payment_hash, recipient, sender, action, amount, channel):
+    sql = f'''
+    INSERT into invoice_audit_nc (payment_hash, sender, recipient, action, amount, status, channel)
+    VALUES ('{payment_hash}','{sender}','{recipient}','{action}',{amount},'PENDING','{channel}')
+
+    '''
+    conn = psycopg2.connect("dbname='rapaygo_invoice' user='sydney'")
+    # conn = None
+    # try:
+    #    conn = psycopg2.connect("dbname='rapaygo_invoice' user='postgres'")
+    # except:
+    #    print("I am unable to connect to the database.")
+
+    cur = conn.cursor()
+
+    cur.execute(sql)
+    conn.commit()
+    conn.close()
+
 def fetch_all_invoice():
 
     #cur.execute("""select id from invoice_audit where status= 'PENDING'""")

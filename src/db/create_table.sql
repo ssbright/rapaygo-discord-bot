@@ -24,3 +24,17 @@ discord_name                TEXT        NOT NULL,
 discord_id                  TEXT        NOT NULL,
 UNIQUE(api_key,api_secret)
 );
+
+CREATE TABLE invoice_audit_nc (
+id                          BIGSERIAL   NOT NULL PRIMARY KEY,
+created_at                  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+updated_at                  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+payment_hash                TEXT        NOT NULL,
+sender                      TEXT        NOT NULL,
+recipient                   TEXT        NOT NULL,
+action                      TEXT        NOT NULL,
+amount                      BIGINT      NOT NULL,
+status                      TEXT        NOT NULL,
+channel                     TEXT        NOT NULL,
+UNIQUE(payment_hash)
+);
