@@ -4,11 +4,11 @@ from dotenv import load_dotenv
 import os
 from discord.ext import commands
 from discord_slash import SlashCommand
-import lnd_grpc
 import qrcode
 import qrcode.image.svg
 import discord
 import configparser
+from lndgrpc import LNDClient
 
 #local imports
 from command_parser import command_validator, inquiry_command, anyother_message
@@ -123,19 +123,19 @@ async def on_message(message):  # this event is called when a message is sent by
     else:
 
         #Deine the RPC client for specifc channel from config file
+        LND_RPC_PORT = config[str(channel.id)]['LND_NODE_PORT']
+        LND_RPC_IP = config[str(channel.id)]['LND_NODE_IP']
         LND_FOLDER = config[str(channel.id)]['LND_FOLDER']
         LND_MACAROON_FILE = config[str(channel.id)]['LND_MACAROON_FILE']
         LND_TLS_CERT_FILE = config[str(channel.id)]['LND_TLS_CERT_FILE']
         LND_RPC_HOST = config[str(channel.id)]['LND_RPC_HOST']
+        lnd_ip_port = f"{LND_RPC_IP}:{LND_RPC_PORT}"
 
-        lnd_rpc = lnd_grpc.Client(
-            lnd_dir=LND_FOLDER,
-            macaroon_path=LND_MACAROON_FILE,
-            tls_cert_path=LND_TLS_CERT_FILE,
-            grpc_host=LND_RPC_HOST,
-
+        lnd = LNDClient(
+            lnd_ip_port,
+            macaroon_filepath=LND_MACAROON_FILE,
+            cert_filepath=LND_TLS_CERT_FILE,
         )
-
 
         if content.strip() == "hello":  # if the message is 'hello', the bot responds with 'Hi!'
             await channel.send("Hi!")
@@ -161,8 +161,8 @@ async def on_message(message):  # this event is called when a message is sent by
                 channelIn = str(str.split(str(message.channel.id))[0])
                 await channel.send("invoice triggered")
                 user = message.author
-                lnd_rpc.add_invoice("Invoice from discord user {}".format(user), int(amount), 3600);
-                invoices = lnd_rpc.list_invoices()
+                lnd.add_invoice(int(amount),"Invoice from discord user {}".format(user));
+                invoices = lnd.list_invoices()
                 paymentHash = invoices.invoices._values[-1].payment_request
                 persist_invoice_nc(paymentHash, name, user, "tip", amount, channelIn)
                 qr = qrcode.make(paymentHash)

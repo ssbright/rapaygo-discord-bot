@@ -7,6 +7,6 @@ psycopg2-binary
 qrcode
 requests
 pillow
-lnd_grpc
+lnd-grpc-client
 pybase64
 config
